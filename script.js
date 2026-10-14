@@ -1,6 +1,12 @@
 // --- 1. Supabaseの接続設定 ---
-const SUPABASE_URL = 'https://vsrzssmiwbczqvftnuaz.supabase.co'; // ご自身のURLに変更してください
-const SUPABASE_ANON_KEY = 'sb_publishable_gaIh0oTHZoeF6CMVWci1fA_LAiH_Qgl'; // ご自身のAnon Keyに変更してください
+const SUPABASE_URL = "https://vsrzssmiwbczqvftnuaz.supabase.co"; // ご自身のURLに書き換えてね
+const SUPABASE_ANON_KEY = "sb_publishable_gaIh0oTHZoeF6CMVWci1fA_LAiH_Qgl"; // ご自身のAnon Keyに書き換えてね
+
+// Supabaseライブラリが読み込まれているかチェック
+if (typeof supabase === 'undefined') {
+    console.error('❌ エラー: Supabaseのライブラリが読み込まれていません！');
+}
+
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let allSites = []; // 取得した全データを保持する変数
@@ -8,17 +14,21 @@ let currentTag = 'all'; // 現在選択されているタグ
 
 // --- 2. データの取得 ---
 async function fetchSites() {
+    console.log('🔄 Supabaseからデータを取得中...');
+    
     const { data, error } = await supabaseClient
         .from('sites')
         .select('*')
         .order('id', { ascending: false });
 
     if (error) {
-        console.error('データの取得に失敗しました:', error);
+        console.error('❌ Supabaseからのデータ取得に失敗しました:', error.message);
+        alert('データを読み込めませんでした。F12キーのコンソールを確認してね！');
         return;
     }
 
-    allSites = data;
+    console.log('✨ データの取得に成功しました！:', data);
+    allSites = data || [];
     displaySites(allSites);
     setupTagButtons(allSites);
 }
@@ -29,7 +39,7 @@ function displaySites(sites) {
     siteList.innerHTML = '';
 
     if (sites.length === 0) {
-        siteList.innerHTML = `<p class="col-span-full text-center text-gray-400 py-10">見つからなかったよ…💦</p>`;
+        siteList.innerHTML = `<p class="col-span-full text-center text-gray-400 py-10">作品データがまだ見つからないよ…💦（Supabaseにデータを追加してね！）</p>`;
         return;
     }
 
@@ -67,7 +77,6 @@ function setupTagButtons(sites) {
     });
 
     const tagFilters = document.getElementById('tagFilters');
-    // 「すべて」ボタン以外をいったんクリア
     tagFilters.innerHTML = `<button class="tag-btn px-4 py-1.5 rounded-full text-xs font-bold bg-pink-400 text-white shadow-sm transition" data-tag="all">すべて</button>`;
 
     tagSet.forEach(tag => {
@@ -78,7 +87,6 @@ function setupTagButtons(sites) {
         tagFilters.appendChild(btn);
     });
 
-    // ボタンクリック時の絞り込みイベント
     document.querySelectorAll('.tag-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.tag-btn').forEach(b => {
