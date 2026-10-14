@@ -1,0 +1,16 @@
+/* マカロン風のふんわりした背景色とフォント設定 */
+body {
+    background-color: #fffaf0;
+    color: #6b5b5b;
+    font-family: 'Nunito', 'Rounded Mplus 1c', sans-serif;
+}
+
+/* カードをホバーしたときにふわっと浮かぶアニメーション */
+.macaron-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.macaron-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(255, 182, 193, 0.3);
+}

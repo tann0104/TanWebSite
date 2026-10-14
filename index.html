@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>わたしの作品おやつ箱 🍡</title>
+    <!-- Tailwind CSSの読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- 独自のスタイルシート -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen py-10 px-4">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- ヘッダータイトル -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-pink-400 mb-2">✨ わたしの作品おやつ箱 ✨</h1>
+            <p class="text-sm text-gray-500">作ったゲームやチャットを可愛くまとめたよ</p>
+        </header>
+
+        <!-- 検索・フィルターエリア -->
+        <div class="bg-white/80 backdrop-blur p-6 rounded-3xl shadow-sm mb-8 border border-pink-100 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <!-- 検索窓 -->
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="キーワードでさがす..." 
+                class="w-full md:w-72 px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30"
+            >
+            <!-- タグフィルターボタンが表示される場所 -->
+            <div id="tagFilters" class="flex flex-wrap gap-2 justify-center">
+                <button class="tag-btn px-4 py-1.5 rounded-full text-xs font-bold bg-pink-400 text-white shadow-sm transition" data-tag="all">すべて</button>
+            </div>
+        </div>
+
+        <!-- 作品カード一覧が表示される場所 -->
+        <div id="siteList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <!-- JavaScriptでここにカードが差し込まれます -->
+        </div>
+    </div>
+
+    <!-- Supabaseクライアントの読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- 独自のJavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
