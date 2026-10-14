@@ -1,6 +1,6 @@
 // --- 1. Supabaseの接続設定 ---
-const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // ご自身のURLに変更してください
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // ご自身のAnon Keyに変更してください
+const SUPABASE_URL = 'https://vsrzssmiwbczqvftnuaz.supabase.co'; // ご自身のURLに変更してください
+const SUPABASE_ANON_KEY = 'sb_publishable_gaIh0oTHZoeF6CMVWci1fA_LAiH_Qgl'; // ご自身のAnon Keyに変更してください
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let allSites = []; // 取得した全データを保持する変数
