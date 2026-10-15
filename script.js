@@ -147,5 +147,15 @@ addSiteForm.addEventListener('submit', async (e) => {
     fetchSites(); // 一覧画面を最新の状態に再読み込みする
 });
 
+// --- 7. URLに ?admin がある場合だけフォームを表示する処理 ---
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('admin')) {
+    const adminFormContainer = document.getElementById('adminFormContainer');
+    if (adminFormContainer) {
+        adminFormContainer.classList.remove('hidden'); // hiddenクラスを外して表示する
+        console.log('🔓 管理者モードで表示しています');
+    }
+}
+
 // ページ読み込み時にデータを取得して実行
 fetchSites();

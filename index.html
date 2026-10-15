@@ -39,7 +39,8 @@
         </div>
 
         <!-- パスワード付き作品追加フォーム -->
-        <div class="bg-white/85 backdrop-blur p-6 rounded-3xl shadow-sm mb-8 border border-pink-100 max-w-xl mx-auto">
+      <!-- パスワード付き作品追加フォーム（初期状態では hidden で非表示にしています） -->
+        <div id="adminFormContainer" class="hidden bg-white/85 backdrop-blur p-6 rounded-3xl shadow-sm mb-8 border border-pink-100 max-w-xl mx-auto">
             <h2 class="text-xl font-bold text-pink-400 mb-4 text-center">💖 新しい作品を追加する</h2>
             <form id="addSiteForm" class="flex flex-col gap-3">
                 <input type="text" id="newTitle" placeholder="作品のタイトル（例: ねこちゃんパズル）" required class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
@@ -54,7 +55,6 @@
                 </button>
             </form>
         </div>
-    </div>
 
     <!-- Supabaseクライアントの読み込み -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
