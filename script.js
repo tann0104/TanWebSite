@@ -1,11 +1,6 @@
 // --- 1. Supabaseの接続設定 ---
-const SUPABASE_URL = "https://vsrzssmiwbczqvftnuaz.supabase.co"; // ご自身のURLに書き換えてね
-const SUPABASE_ANON_KEY = "sb_publishable_gaIh0oTHZoeF6CMVWci1fA_LAiH_Qgl"; // ご自身のAnon Keyに書き換えてね
-
-// Supabaseライブラリが読み込まれているかチェック
-if (typeof supabase === 'undefined') {
-    console.error('❌ エラー: Supabaseのライブラリが読み込まれていません！');
-}
+const SUPABASE_URL = 'https://vsrzssmiwbczqvftnuaz.supabase.co'; // ご自身のSupabaseのURLに書き換えてね
+const SUPABASE_ANON_KEY = 'sb_publishable_gaIh0oTHZoeF6CMVWci1fA_LAiH_Qgl'; // ご自身のAnon Keyに書き換えてね
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -14,20 +9,16 @@ let currentTag = 'all'; // 現在選択されているタグ
 
 // --- 2. データの取得 ---
 async function fetchSites() {
-    console.log('🔄 Supabaseからデータを取得中...');
-    
     const { data, error } = await supabaseClient
         .from('sites')
         .select('*')
         .order('id', { ascending: false });
 
     if (error) {
-        console.error('❌ Supabaseからのデータ取得に失敗しました:', error.message);
-        alert('データを読み込めませんでした。F12キーのコンソールを確認してね！');
+        console.error('データの取得に失敗しました:', error.message);
         return;
     }
 
-    console.log('✨ データの取得に成功しました！:', data);
     allSites = data || [];
     displaySites(allSites);
     setupTagButtons(allSites);
@@ -39,7 +30,7 @@ function displaySites(sites) {
     siteList.innerHTML = '';
 
     if (sites.length === 0) {
-        siteList.innerHTML = `<p class="col-span-full text-center text-gray-400 py-10">作品データがまだ見つからないよ…💦（Supabaseにデータを追加してね！）</p>`;
+        siteList.innerHTML = `<p class="col-span-full text-center text-gray-400 py-10">作品がまだ見つからないよ…💦下のフォームから追加してね！</p>`;
         return;
     }
 
@@ -115,6 +106,46 @@ function filterSites() {
 
     displaySites(filtered);
 }
+
+// --- 6. パスワード付き作品追加フォームの処理 ---
+const addSiteForm = document.getElementById('addSiteForm');
+addSiteForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); // ページの再読み込みを防ぐ
+
+    // パスワードの確認（お好みの合言葉に変更してね！）
+    const passwordInput = document.getElementById('adminPassword').value;
+    const CORRECT_PASSWORD = 'macaron123'; 
+
+    if (passwordInput !== CORRECT_PASSWORD) {
+        alert('パスワードが違うよ！💦 正しい合言葉を入力してね。');
+        return;
+    }
+
+    // フォームに入力された値を取得
+    const title = document.getElementById('newTitle').value;
+    const description = document.getElementById('newDescription').value;
+    const url = document.getElementById('newUrl').value;
+    const thumbnail = document.getElementById('newThumbnail').value;
+    const tagsInput = document.getElementById('newTags').value;
+
+    // カンマ区切りのタグを配列に変換する（例: "ゲーム, パズル" → ["ゲーム", "パズル"]）
+    const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== "") : [];
+
+    // Supabaseにデータを送信
+    const { data, error } = await supabaseClient
+        .from('sites')
+        .insert([{ title, description, url, thumbnail, tags }]);
+
+    if (error) {
+        console.error('データの追加に失敗しました:', error.message);
+        alert('追加に失敗しちゃいました…💦 コンソールを確認してね！');
+        return;
+    }
+
+    alert('パスワード認証OK！新しい作品を追加したよ！🎉');
+    addSiteForm.reset(); // フォームを空にする
+    fetchSites(); // 一覧画面を最新の状態に再読み込みする
+});
 
 // ページ読み込み時にデータを取得して実行
 fetchSites();

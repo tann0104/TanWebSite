@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>わたしの作品 🍡</title>
+    <title>わたしの作品おやつ箱 🍡</title>
     <!-- Tailwind CSSの読み込み -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- 独自のスタイルシート -->
@@ -14,12 +14,12 @@
     <div class="max-w-4xl mx-auto">
         <!-- ヘッダータイトル -->
         <header class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-pink-400 mb-2">✨ わたしの作品 🍡</h1>
-            <p class="text-sm text-gray-500">作ったゲームやチャットのまとめ</p>
+            <h1 class="text-3xl font-bold text-pink-400 mb-2">✨ わたしの作品おやつ箱 ✨</h1>
+            <p class="text-sm text-gray-500">作ったゲームやチャットを可愛くまとめたよ</p>
         </header>
 
         <!-- 検索・フィルターエリア -->
-        <div class="bg-white/80 backdrop-blur p-6 rounded-3xl shadow-sm mb-8 border border-pink-100 flex flex-col md:flex-row gap-4 justify-between items-center">
+        <div class="bg-white/85 backdrop-blur p-6 rounded-3xl shadow-sm mb-8 border border-pink-100 flex flex-col md:flex-row gap-4 justify-between items-center">
             <!-- 検索窓 -->
             <input 
                 type="text" 
@@ -34,8 +34,25 @@
         </div>
 
         <!-- 作品カード一覧が表示される場所 -->
-        <div id="siteList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div id="siteList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
             <!-- JavaScriptでここにカードが差し込まれます -->
+        </div>
+
+        <!-- パスワード付き作品追加フォーム -->
+        <div class="bg-white/85 backdrop-blur p-6 rounded-3xl shadow-sm mb-8 border border-pink-100 max-w-xl mx-auto">
+            <h2 class="text-xl font-bold text-pink-400 mb-4 text-center">💖 新しい作品を追加する</h2>
+            <form id="addSiteForm" class="flex flex-col gap-3">
+                <input type="text" id="newTitle" placeholder="作品のタイトル（例: ねこちゃんパズル）" required class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
+                <input type="text" id="newDescription" placeholder="簡単な説明" class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
+                <input type="url" id="newUrl" placeholder="サイトのURL（例: https://...）" required class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
+                <input type="url" id="newThumbnail" placeholder="サムネイル画像のURL（あれば）" class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
+                <input type="text" id="newTags" placeholder="タグ（例: ゲーム, チャット ※カンマ区切り）" class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
+                <input type="password" id="adminPassword" placeholder="管理用パスワード（合言葉）" required class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
+                
+                <button type="submit" class="mt-2 py-2 bg-pink-400 hover:bg-pink-500 text-white rounded-full font-bold text-sm transition shadow-sm cursor-pointer">
+                    追加する ✨
+                </button>
+            </form>
         </div>
     </div>
 
