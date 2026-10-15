@@ -1,13 +1,49 @@
 // --- 1. Supabaseの接続設定 ---
-const SUPABASE_URL = 'https://vsrzssmiwbczqvftnuaz.supabase.co'; // ご自身のSupabaseのURLに書き換えてね
-const SUPABASE_ANON_KEY = 'sb_publishable_gaIh0oTHZoeF6CMVWci1fA_LAiH_Qgl'; // ご自身のAnon Keyに書き換えてね
+const SUPABASE_URL = 'https://vsrzssmiwbczqvftnuaz.supabase.co'; // ご自身のSupabase URL
+const SUPABASE_ANON_KEY = 'sb_publishable_gaIh0oTHZoeF6CMVWci1fA_LAiH_Qgl'; // ご自身のAnon Key
+const CORRECT_PASSWORD = '@Tann0104'; // 🔑 管理者用パスワード
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let allSites = []; // 取得した全データを保持する変数
-let currentTag = 'all'; // 現在選択されているタグ
+let allSites = []; 
+let currentTag = 'all'; 
+let isAdmin = false; // 管理者フラグ
 
-// --- 2. データの取得 ---
+// --- 2. 管理者認証モーダルの処理 ---
+const urlParams = new URLSearchParams(window.location.search);
+const passwordModal = document.getElementById('passwordModal');
+const passwordForm = document.getElementById('passwordForm');
+const openFormBtn = document.getElementById('openFormBtn');
+
+if (urlParams.has('admin')) {
+    // ?admin がある場合は認証用モーダルを表示
+    passwordModal.classList.remove('hidden');
+}
+
+passwordForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const inputPassword = document.getElementById('inputPassword').value;
+
+    if (inputPassword === CORRECT_PASSWORD) {
+        isAdmin = true;
+        passwordModal.classList.add('hidden');
+        openFormBtn.classList.remove('hidden'); // 「作品を追加」ボタンを表示
+        displaySites(allSites); // 削除ボタン付きでカードを再描画
+        alert('管理者モードでログインしました 🔓');
+    } else {
+        alert('パスワードが間違っています 💦 トップページに戻ります。');
+        window.location.href = 'https://tann.f5.si/'; // 指定のURLへ戻す
+    }
+});
+
+// --- 3. 作品追加フォームモーダルの開閉 ---
+const formModal = document.getElementById('formModal');
+const closeFormBtn = document.getElementById('closeFormBtn');
+
+openFormBtn.addEventListener('click', () => formModal.classList.remove('hidden'));
+closeFormBtn.addEventListener('click', () => formModal.classList.add('hidden'));
+
+// --- 4. データの取得 ---
 async function fetchSites() {
     const { data, error } = await supabaseClient
         .from('sites')
@@ -24,23 +60,27 @@ async function fetchSites() {
     setupTagButtons(allSites);
 }
 
-// --- 3. 画面にカードを表示する関数 ---
+// --- 5. 画面にカードを表示する関数 ---
 const siteList = document.getElementById('siteList');
 function displaySites(sites) {
     siteList.innerHTML = '';
 
     if (sites.length === 0) {
-        siteList.innerHTML = `<p class="col-span-full text-center text-gray-400 py-10">作品がまだ見つからないよ…💦下のフォームから追加してね！</p>`;
+        siteList.innerHTML = `<p class="col-span-full text-center text-gray-400 py-10">作品がまだ見つからないよ…💦</p>`;
         return;
     }
 
     sites.forEach(site => {
-        // タグのバッジを作成
         const tagsHtml = site.tags ? site.tags.map(tag => 
             `<span class="bg-pink-100 text-pink-500 text-[10px] px-2.5 py-0.5 rounded-full font-bold">#${tag}</span>`
         ).join('') : '';
 
-        // カードのHTML要素を作成
+        // 管理者モードの時だけ削除ボタンを組み立てる
+        const deleteBtnHtml = isAdmin ? 
+            `<button onclick="deleteSite(${site.id})" class="w-full mt-2 py-1 bg-red-100 hover:bg-red-200 text-red-500 rounded-full text-[11px] font-bold transition cursor-pointer">
+                🗑️ 削除する
+            </button>` : '';
+
         const card = document.createElement('div');
         card.className = "macaron-card bg-white rounded-3xl p-5 border border-pink-100 shadow-sm flex flex-col justify-between";
         card.innerHTML = `
@@ -54,13 +94,33 @@ function displaySites(sites) {
                 <a href="${site.url}" target="_blank" class="block text-center w-full py-2 bg-pink-300 hover:bg-pink-400 text-white rounded-full text-xs font-bold transition shadow-sm">
                     サイトを見る 🚀
                 </a>
+                ${deleteBtnHtml}
             </div>
         `;
         siteList.appendChild(card);
     });
 }
 
-// --- 4. タグボタンを自動生成する関数 ---
+// --- 6. 作品削除処理 ---
+async function deleteSite(id) {
+    if (!confirm('本当にこの作品を削除しますか？')) return;
+
+    const { error } = await supabaseClient
+        .from('sites')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error('削除に失敗しました:', error.message);
+        alert('削除に失敗しました 💦');
+        return;
+    }
+
+    alert('作品を削除しました 🗑️');
+    fetchSites(); // 画面を更新
+}
+
+// --- 7. タグボタン生成 ＆ 検索機能 ---
 function setupTagButtons(sites) {
     const tagSet = new Set();
     sites.forEach(site => {
@@ -91,7 +151,6 @@ function setupTagButtons(sites) {
     });
 }
 
-// --- 5. 検索とタグ絞り込みの連動 ---
 const searchInput = document.getElementById('searchInput');
 searchInput.addEventListener('input', filterSites);
 
@@ -107,55 +166,34 @@ function filterSites() {
     displaySites(filtered);
 }
 
-// --- 6. パスワード付き作品追加フォームの処理 ---
+// --- 8. 作品追加の処理 ---
 const addSiteForm = document.getElementById('addSiteForm');
 addSiteForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // ページの再読み込みを防ぐ
+    e.preventDefault();
 
-    // パスワードの確認（お好みの合言葉に変更してね！）
-    const passwordInput = document.getElementById('adminPassword').value;
-    const CORRECT_PASSWORD = 'macaron123'; 
-
-    if (passwordInput !== CORRECT_PASSWORD) {
-        alert('パスワードが違うよ！💦 正しい合言葉を入力してね。');
-        return;
-    }
-
-    // フォームに入力された値を取得
     const title = document.getElementById('newTitle').value;
     const description = document.getElementById('newDescription').value;
     const url = document.getElementById('newUrl').value;
     const thumbnail = document.getElementById('newThumbnail').value;
     const tagsInput = document.getElementById('newTags').value;
 
-    // カンマ区切りのタグを配列に変換する（例: "ゲーム, パズル" → ["ゲーム", "パズル"]）
     const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== "") : [];
 
-    // Supabaseにデータを送信
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
         .from('sites')
         .insert([{ title, description, url, thumbnail, tags }]);
 
     if (error) {
-        console.error('データの追加に失敗しました:', error.message);
-        alert('追加に失敗しちゃいました…💦 コンソールを確認してね！');
+        console.error('追加に失敗しました:', error.message);
+        alert('追加に失敗しました 💦');
         return;
     }
 
-    alert('パスワード認証OK！新しい作品を追加したよ！🎉');
-    addSiteForm.reset(); // フォームを空にする
-    fetchSites(); // 一覧画面を最新の状態に再読み込みする
+    alert('新しい作品を追加したよ！🎉');
+    addSiteForm.reset();
+    formModal.classList.add('hidden'); // モーダルを閉じる
+    fetchSites();
 });
 
-// --- 7. URLに ?admin がある場合だけフォームを表示する処理 ---
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('admin')) {
-    const adminFormContainer = document.getElementById('adminFormContainer');
-    if (adminFormContainer) {
-        adminFormContainer.classList.remove('hidden'); // hiddenクラスを外して表示する
-        console.log('🔓 管理者モードで表示しています');
-    }
-}
-
-// ページ読み込み時にデータを取得して実行
+// ページ読み込み時に実行
 fetchSites();

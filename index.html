@@ -12,10 +12,16 @@
 <body class="min-h-screen py-10 px-4">
 
     <div class="max-w-4xl mx-auto">
-        <!-- ヘッダータイトル -->
-        <header class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-pink-400 mb-2">✨ わたしの作品おやつ箱 ✨</h1>
-            <p class="text-sm text-gray-500">作ったゲームやチャットを可愛くまとめたよ</p>
+        <!-- ヘッダータイトル ＆ 管理者用追加ボタン -->
+        <header class="text-center mb-10 flex flex-col md:flex-row items-center justify-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-pink-400 mb-2">✨ わたしの作品おやつ箱 ✨</h1>
+                <p class="text-sm text-gray-500">作ったゲームやチャットを可愛くまとめたよ</p>
+            </div>
+            <!-- 管理者モードの時だけ表示される追加ボタン -->
+            <button id="openFormBtn" class="hidden px-4 py-2 bg-pink-400 hover:bg-pink-500 text-white rounded-full font-bold text-xs shadow-md transition transform hover:scale-105 cursor-pointer">
+                ➕ 作品を追加
+            </button>
         </header>
 
         <!-- 検索・フィルターエリア -->
@@ -37,24 +43,38 @@
         <div id="siteList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
             <!-- JavaScriptでここにカードが差し込まれます -->
         </div>
+    </div>
 
-        <!-- パスワード付き作品追加フォーム -->
-      <!-- パスワード付き作品追加フォーム（初期状態では hidden で非表示にしています） -->
-        <div id="adminFormContainer" class="hidden bg-white/85 backdrop-blur p-6 rounded-3xl shadow-sm mb-8 border border-pink-100 max-w-xl mx-auto">
+    <!-- 🔒 管理者用パスワード入力モーダル -->
+    <div id="passwordModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-xl border border-pink-100 text-center">
+            <h3 class="text-lg font-bold text-pink-400 mb-2">🔒 管理者認証</h3>
+            <p class="text-xs text-gray-500 mb-4">合言葉を入力してください</p>
+            <form id="passwordForm" class="flex flex-col gap-3">
+                <input type="password" id="inputPassword" placeholder="パスワード" required class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30 text-center">
+                <button type="submit" class="py-2 bg-pink-400 hover:bg-pink-500 text-white rounded-full font-bold text-xs transition">ログイン</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 💖 作品追加フォーム用モーダル -->
+    <div id="formModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white/95 backdrop-blur p-6 rounded-3xl shadow-xl border border-pink-100 max-w-md w-full relative">
+            <button id="closeFormBtn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-sm cursor-pointer">✕</button>
             <h2 class="text-xl font-bold text-pink-400 mb-4 text-center">💖 新しい作品を追加する</h2>
             <form id="addSiteForm" class="flex flex-col gap-3">
                 <input type="text" id="newTitle" placeholder="作品のタイトル（例: ねこちゃんパズル）" required class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
                 <input type="text" id="newDescription" placeholder="簡単な説明" class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
                 <input type="url" id="newUrl" placeholder="サイトのURL（例: https://...）" required class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
-                <input type="url" id="newThumbnail" placeholder="サムネイル画像のURL（あれば）" class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
+                <input type="url" id="newThumbnail" placeholder="サムネイル画像のURL（例: https://...）" class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
                 <input type="text" id="newTags" placeholder="タグ（例: ゲーム, チャット ※カンマ区切り）" class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
-                <input type="password" id="adminPassword" placeholder="管理用パスワード（合言葉）" required class="px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm bg-pink-50/30">
                 
                 <button type="submit" class="mt-2 py-2 bg-pink-400 hover:bg-pink-500 text-white rounded-full font-bold text-sm transition shadow-sm cursor-pointer">
                     追加する ✨
                 </button>
             </form>
         </div>
+    </div>
 
     <!-- Supabaseクライアントの読み込み -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
